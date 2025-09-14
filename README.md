@@ -10,6 +10,7 @@ The dashboard highlights anomalies in stock prices and provides downloadable ano
 ## Demo Video
 A screen recording showing the StockPulse dashboard in action is included in the `StockPulse_Demo` folder.
 
+> *Data Storage:* This project uses a simple file-based database (CSV files) for storing raw, processed, and anomaly report data. No external database (MongoDB/MySQL) is required.
 
 ## Features  
 
