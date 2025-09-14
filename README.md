@@ -7,6 +7,18 @@ The dashboard highlights anomalies in stock prices and provides downloadable ano
 
 ---
 
+## Features  
+
+- **Upload Stock Data:** Upload CSV files containing stock market data with fields like Date, Close, Volume, etc.  
+- **Anomaly Detection:** Uses **Isolation Forest** and other algorithms to detect unusual spikes, dips, or patterns in stock prices.  
+- **Highlight Anomalies:** Detected anomalies are highlighted in the results table for easy visualization.  
+- **Interactive Charts:** View stock price trends over time with anomalies marked on the charts.  
+- **Download Reports:** Export anomaly detection results as CSV reports for further analysis or documentation.  
+- **Sample Data Provided:** Test the dashboard quickly with a sample stock CSV included in the project.  
+- **Simple & Professional UI:** User-friendly dashboard built with Flask and Bootstrap for easy navigation and interaction.  
+
+---
+
 ## Project Structure  
 
 /StockPulse
