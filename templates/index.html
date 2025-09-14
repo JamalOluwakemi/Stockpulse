@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>StockPulse Dashboard</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='jamal/css/bootstrap.min.css') }}">
+  <style>
+    body {
+      padding-top: 70px;
+      background-color: #f4f6f8;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    /* Hero Section */
+    .hero {
+      text-align: center;
+      margin-bottom: 40px;
+    }
+    .hero h1 {
+      font-size: 2.5rem;
+      font-weight: 700;
+      color: #343a40;
+    }
+    .hero p {
+      font-size: 1.1rem;
+      color: #6c757d;
+    }
+
+    /* Upload Card */
+    .upload-card {
+      max-width: 500px;
+      margin: 0 auto;
+      padding: 35px 30px;
+      border-radius: 12px;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.1);
+      background-color: #ffffff;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .upload-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+    }
+
+    .form-control, .btn {
+      border-radius: 50px;
+    }
+
+    .btn-primary {
+      font-weight: 500;
+      padding: 10px 20px;
+    }
+
+    .btn-outline-secondary {
+      border-radius: 50px;
+      font-weight: 500;
+      padding: 8px 20px;
+    }
+
+    .text-muted {
+      font-size: 0.9rem;
+    }
+
+    .alert {
+      border-radius: 12px;
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
+  <div class="container-fluid">
+    <a class="navbar-brand fw-bold" href="/">STOCKPULSE</a>
+  </div>
+</nav>
+
+<div class="container">
+
+  <!-- Hero Section -->
+  <div class="hero">
+    <h1>Welcome to StockPulse</h1>
+    <p>Detect stock price anomalies instantly and visualize trends with ease</p>
+  </div>
+
+  <!-- Upload Card -->
+  <div class="upload-card">
+    <h4 class="mb-4 text-center">Upload Your Stock Data</h4>
+
+    <form method="POST" enctype="multipart/form-data">
+      <div class="mb-3">
+        <input class="form-control" type="file" name="file" accept=".csv">
+      </div>
+      <button class="btn btn-primary w-100" type="submit">View Results</button>
+    </form>
+
+    <div class="text-center mt-3">
+      <p class="text-muted mb-1">Don’t have a dataset?</p>
+      <a href="{{ url_for('download_sample') }}" class="btn btn-outline-secondary w-50">Download Sample CSV</a>
+    </div>
+
+    <!-- Flash Messages -->
+    {% with messages = get_flashed_messages() %}
+      {% if messages %}
+        <div class="alert alert-warning mt-3" role="alert">
+          {% for message in messages %}
+            <div>{{ message }}</div>
+          {% endfor %}
+        </div>
+      {% endif %}
+    {% endwith %}
+  </div>
+
+</div>
+
+<script src="{{ url_for('static', filename='jamal/js/bootstrap.bundle.min.js') }}"></script>
+</body>
+</html>
