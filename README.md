@@ -7,6 +7,10 @@ The dashboard highlights anomalies in stock prices and provides downloadable ano
 
 ---
 
+## Demo Video
+A screen recording showing the StockPulse dashboard in action is included in the `StockPulse_Demo` folder.
+
+
 ## Features  
 
 - **Upload Stock Data:** Upload CSV files containing stock market data with fields like Date, Close, Volume, etc.  
@@ -60,6 +64,8 @@ The dashboard highlights anomalies in stock prices and provides downloadable ano
 └── notebooks/                    # Jupyter notebooks for EDA & prototyping
     ├── eda.ipynb                 # Exploratory Data Analysis
     └── feature_engineering.ipynb # Feature engineering & preprocessing
+└── StockPulse_Demo/
+    └── StockPulse_Dashboard_Demo.mp4
 
 ---
 
