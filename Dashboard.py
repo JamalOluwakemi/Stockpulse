@@ -53,33 +53,67 @@ def load_csv(filepath):
         df['Date'] = pd.to_datetime(df['Date'], errors='coerce')
     return df
 
-def detect_anomalies(df):
-    """Run Isolation Forest on selected features."""
+def detect_anomalies(df, filename=None):
+    """Run Isolation Forest on selected features and generate metrics."""
     features = ['Close', 'Volume', 'Daily_Return', 'Volatility_7', 'Volatility_30']
     available_features = [f for f in features if f in df.columns]
     if not available_features:
         df['Anomaly'] = 0
-        return df
+        return df, None
 
+    # Standardize and run Isolation Forest
     X = df[available_features].fillna(0)
     X_scaled = StandardScaler().fit_transform(X)
-    iso_forest = IsolationForest(contamination=0.05, random_state=42)
+    contamination_rate = 0.05
+    iso_forest = IsolationForest(contamination=contamination_rate, random_state=42)
     df['Anomaly'] = (iso_forest.fit_predict(X_scaled) == -1).astype(int)
-    return df
 
-# --- Routes ---
+    # --- Metrics ---
+    total_rows = len(df)
+    num_anomalies = df['Anomaly'].sum()
+    anomaly_fraction = num_anomalies / total_rows if total_rows > 0 else 0
+
+    metrics_text = f"""
+    Model Evaluation Report
+    =======================
+    File: {filename if filename else "N/A"}
+    Total rows: {total_rows}
+    Number of anomalies detected: {num_anomalies}
+    Anomaly fraction: {anomaly_fraction:.2%}
+    Contamination parameter: {contamination_rate:.2%}
+    """
+
+    # Save metrics file
+    metrics_file = os.path.join(REPORTS_DIR, "metrics.txt")
+    with open(metrics_file, "w") as f:
+        f.write(metrics_text)
+
+    return df, metrics_text
+
+
+# --- ROUTES ---
 @app.route('/', methods=['GET', 'POST'])
 def index():
     if request.method == 'POST':
-        file = request.files.get('file')
+        if 'file' not in request.files:
+            flash("No file part in request.")
+            return redirect(request.url)
+
+        file = request.files['file']
+        if file.filename == '':
+            flash("No file selected.")
+            return redirect(request.url)
+
         if file and file.filename.endswith('.csv'):
             filepath = os.path.join(UPLOAD_FOLDER, file.filename)
             file.save(filepath)
             return redirect(url_for('results', filename=file.filename))
         else:
             flash("Please upload a valid CSV file.")
-            return redirect(url_for('index'))
+            return redirect(request.url)
+
     return render_template('index.html')
+
 
 @app.route('/results/<filename>')
 def results(filename):
@@ -88,9 +122,9 @@ def results(filename):
         flash("File not found.")
         return redirect(url_for('index'))
 
-    # Load CSV and detect anomalies
+    # Load CSV and detect anomalies + metrics
     df = load_csv(file_path)
-    df = detect_anomalies(df)
+    df, metrics_content = detect_anomalies(df, filename)
 
     # Keep only anomalies for report
     anomalies = df[df['Anomaly'] == 1]
@@ -98,16 +132,15 @@ def results(filename):
     report_path = os.path.join(REPORTS_DIR, report_filename)
     anomalies.to_csv(report_path, index=False)
 
-    # Generate plot for full dataset
+    # Generate plot
     plot_file = None
     if 'Date' in df.columns and 'Close' in df.columns:
         plot_filename = f"{os.path.splitext(filename)[0]}_plot.png"
         plot_file = plot_stock(df, plot_filename)
 
-    # Show all rows in the table, highlight anomalies
+    # Show results
     tables = [df.to_dict(orient='records')]
     columns = df.columns.tolist()
-
     has_anomalies = not anomalies.empty
 
     return render_template(
@@ -116,7 +149,8 @@ def results(filename):
         columns=columns,
         plot_file=plot_file,
         report_file=report_filename,
-        has_anomalies=has_anomalies
+        has_anomalies=has_anomalies,
+        metrics=metrics_content
     )
 
 @app.route('/plot/<filename>')
@@ -139,6 +173,7 @@ def download_report(filename):
 def download_sample():
     sample_file = os.path.join(SAMPLE_DIR, 'sample_stock.csv')
     return send_file(sample_file, as_attachment=True)
+
 
 if __name__ == '__main__':
     app.run(debug=True)

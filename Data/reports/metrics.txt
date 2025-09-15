@@ -1,0 +1,9 @@
+
+    Model Evaluation Report
+    =======================
+    File: sample_stock.csv
+    Total rows: 4
+    Number of anomalies detected: 1
+    Anomaly fraction: 25.00%
+    Contamination parameter: 5.00%
+    
